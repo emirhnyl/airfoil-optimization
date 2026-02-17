@@ -22,6 +22,8 @@ app = typer.Typer(add_completion=False)
 
 def _make_run_dir(cfg: dict) -> Path:
     out_dir = Path(cfg["project"]["out_dir"])
+    if not out_dir.is_absolute():
+        out_dir = PROJECT_ROOT / out_dir
     name = cfg["project"]["name"]
     run_dir = out_dir / f"{name}_{timestamp_slug()}"
     return ensure_dir(run_dir)

@@ -8,7 +8,7 @@ import json
 
 from airfoil_lny.core.optimization.study import run_study
 
-APP_ROOT = Path(__file__).resolve().parents[3]
+APP_ROOT = Path(__file__).resolve().parents[4]  # airfoil-lny/ kökü
 RUNS_DIR = APP_ROOT / "data" / "runs"
 CONFIGS_DIR = APP_ROOT / "configs"
 
