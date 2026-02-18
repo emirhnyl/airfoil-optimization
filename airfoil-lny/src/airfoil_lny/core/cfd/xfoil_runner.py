@@ -2,7 +2,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 import subprocess
-import textwrap
 import time
 import shutil
 
@@ -34,30 +33,29 @@ def run_xfoil_polar(
         if found:
             exe = found
 
-    script = textwrap.dedent(f"""
-    PLOP
-    G
-
-    LOAD {airfoil_dat_path.as_posix()}
-
-    PANE
-
-    OPER
-    VISC {Re}
-    MACH {Mach}
-    VPAR
-    N {xfoil.ncrit}
-    XTR {xfoil.xtr_top} {xfoil.xtr_bot}
-
-    PACC
-    {out_polar_path.as_posix()}
-
-    ASEQ {aoa_start} {aoa_end} {aoa_step}
-
-    PACC
-
-    QUIT
-    """).strip() + "\n"
+    # XFOIL script - OPER menüsünde kalmalı
+    commands = [
+        "PLOP",
+        "G",
+        "",  # PLOP'tan çık
+        f"LOAD {airfoil_dat_path.name}",
+        "PANE",
+        "OPER",
+        f"VISC {Re}",
+        f"MACH {Mach}",
+        "VPAR",
+        f"N {xfoil.ncrit}",
+        "",  # VPAR'dan çık, OPER'e dön
+        "PACC",  # Hala OPER'deyiz
+        f"{out_polar_path.name}",
+        "",  # dump dosyası yok
+        f"ASEQ {aoa_start} {aoa_end} {aoa_step}",
+        "",  # OPER'de kal
+        "PACC",  # PACC kapat
+        "",  # OPER'den çık
+        "QUIT",
+    ]
+    script = "\n".join(commands) + "\n"
 
     t0 = time.time()
     try:
