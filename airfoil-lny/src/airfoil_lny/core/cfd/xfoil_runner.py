@@ -33,20 +33,21 @@ def run_xfoil_polar(
         if found:
             exe = found
 
-    # XFOIL script - OPER menüsünde kalmalı
+    # XFOIL script - convergence iyileştirmeleriyle
     commands = [
         "PLOP",
         "G",
         "",  # PLOP'tan çık
         f"LOAD {airfoil_dat_path.name}",
-        "PANE",
+        "PANE",  # Otomatik panelleme
         "OPER",
         f"VISC {Re}",
         f"MACH {Mach}",
+        "ITER 200",  # İterasyon limitini artır (default ~100)
         "VPAR",
         f"N {xfoil.ncrit}",
-        "",  # VPAR'dan çık, OPER'e dön
-        "PACC",  # Hala OPER'deyiz
+        "",  # VPAR'dan çık
+        "PACC",
         f"{out_polar_path.name}",
         "",  # dump dosyası yok
         f"ASEQ {aoa_start} {aoa_end} {aoa_step}",
