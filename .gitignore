@@ -39,6 +39,7 @@ Thumbs.db
 outputs/
 *.log
 *.tmp
+airfoil-lny/data/runs/
 
 # Node.js
 node_modules/
