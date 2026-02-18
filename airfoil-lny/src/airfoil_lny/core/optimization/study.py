@@ -40,7 +40,7 @@ def _make_run_dir(cfg: dict) -> Path:
     This avoids surprises when running from different working directories.
     """
     # repo root = .../airfoil-lny/
-    project_root = Path(__file__).resolve().parents[5]
+    project_root = Path(__file__).resolve().parents[4]  # study.py → optimizers → optimization → core → airfoil_lny → src → airfoil-lny
 
     out_dir = Path(cfg["project"]["out_dir"])
     if not out_dir.is_absolute():

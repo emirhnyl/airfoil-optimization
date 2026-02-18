@@ -1,0 +1,68 @@
+{
+  "constraints": {
+    "max_thickness": {
+      "target": 0.16
+    },
+    "min_thickness": {
+      "target": 0.07
+    }
+  },
+  "design_vars": {
+    "bounds": {
+      "m": [
+        0.0,
+        0.06
+      ],
+      "p": [
+        0.2,
+        0.6
+      ],
+      "t": [
+        0.06,
+        0.18
+      ]
+    }
+  },
+  "flow": {
+    "Mach": 0.08,
+    "Re": 800000,
+    "ncrit": 9,
+    "xtr_bot": 1.0,
+    "xtr_top": 1.0
+  },
+  "geometry": {
+    "n_points": 181,
+    "naca4": {
+      "m": 0.02,
+      "p": 0.4,
+      "t": 0.12
+    }
+  },
+  "objective": {
+    "aoa_deg": 4.0,
+    "penalty_weight": 50.0
+  },
+  "optimizer": {
+    "n_candidates_per_iter": 30,
+    "type": "random_search"
+  },
+  "postprocess": {
+    "aoa_end": 10.0,
+    "aoa_start": -2.0,
+    "aoa_step": 0.5,
+    "extrude_thickness_mm": 40.0
+  },
+  "project": {
+    "name": "demo_xfoil_ld_max",
+    "out_dir": "data/runs"
+  },
+  "study": {
+    "n_iters": 3,
+    "seed": 42
+  },
+  "xfoil": {
+    "executable": "xfoil",
+    "max_retries": 1,
+    "timeout_sec": 20
+  }
+}

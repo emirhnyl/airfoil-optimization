@@ -1,0 +1,19 @@
+{
+  "run_dir": "/Users/emir/airfoil proje/airfoil-lny/data/runs/demo_xfoil_ld_max_20260218_025941",
+  "n_iters": 2,
+  "best_score": 0.0,
+  "best_params": {
+    "m": 0.045668382119421175,
+    "p": 0.5144257221107815,
+    "t": 0.0753736359210655
+  },
+  "best_metrics": {
+    "CL": 0.0,
+    "CD": 1000000000.0,
+    "LD": 0.0
+  },
+  "exports": {
+    "dir": "/Users/emir/airfoil proje/airfoil-lny/data/runs/demo_xfoil_ld_max_20260218_025941/exports",
+    "download_all_zip": "/Users/emir/airfoil proje/airfoil-lny/data/runs/demo_xfoil_ld_max_20260218_025941/download_all.zip"
+  }
+}
