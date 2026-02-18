@@ -21,6 +21,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/api/health")
+def health_check():
+    return {"status": "ok", "service": "airfoil-lny"}
+
 def _safe_join(base: Path, rel: str) -> Path:
     target = (base / rel).resolve()
     base_res = base.resolve()
