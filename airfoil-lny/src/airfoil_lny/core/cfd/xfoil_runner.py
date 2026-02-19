@@ -1,76 +1,73 @@
-from __future__ import annotations
-from dataclasses import dataclass
-from pathlib import Path
 import subprocess
-import time
-import shutil
+import os
+import tempfile
 
-@dataclass
-class XFoilConfig:
-    exe: str
-    timeout_sec: int = 20
-    ncrit: float = 9.0
-    xtr_top: float = 1.0
-    xtr_bot: float = 1.0
 
-def run_xfoil_polar(
-    *,
-    xfoil: XFoilConfig,
-    airfoil_dat_path: Path,
-    out_polar_path: Path,
-    Re: float,
-    Mach: float,
-    aoa_start: float,
-    aoa_end: float,
-    aoa_step: float,
-    work_dir: Path,
-) -> tuple[int, str]:
-    work_dir.mkdir(parents=True, exist_ok=True)
+def run_xfoil(airfoil_dat, alpha=5, re=1e6, mach=0.0, timeout=20):
+    """
+    Runs XFOIL for given airfoil file and returns (CL, CD).
+    Returns None if XFOIL fails.
+    """
 
-    exe = xfoil.exe
-    if exe == "xfoil":
-        found = shutil.which("xfoil")
-        if found:
-            exe = found
+    if not os.path.exists(airfoil_dat):
+        print("DAT file not found:", airfoil_dat)
+        return None
 
-    # XFOIL script - convergence iyileştirmeleriyle
-    commands = [
-        "PLOP",
-        "G",
-        "",  # PLOP'tan çık
-        f"LOAD {airfoil_dat_path.name}",
-        "PANE",  # Otomatik panelleme
-        "OPER",
-        f"VISC {Re}",
-        f"MACH {Mach}",
-        "ITER 200",  # İterasyon limitini artır (default ~100)
-        "VPAR",
-        f"N {xfoil.ncrit}",
-        "",  # VPAR'dan çık
-        "PACC",
-        f"{out_polar_path.name}",
-        "",  # dump dosyası yok
-        f"ASEQ {aoa_start} {aoa_end} {aoa_step}",
-        "",  # OPER'de kal
-        "PACC",  # PACC kapat
-        "",  # OPER'den çık
-        "QUIT",
-    ]
-    script = "\n".join(commands) + "\n"
+    with tempfile.TemporaryDirectory() as tmpdir:
+        polar_path = os.path.join(tmpdir, "polar.txt")
 
-    t0 = time.time()
-    try:
-        proc = subprocess.run(
-            [exe],
-            input=script,
-            text=True,
-            capture_output=True,
-            cwd=str(work_dir),
-            timeout=xfoil.timeout_sec,
-        )
-        out = (proc.stdout or "") + "\n" + (proc.stderr or "")
-        out += f"\n[elapsed_sec={time.time()-t0:.2f}]"
-        return proc.returncode, out
-    except subprocess.TimeoutExpired as e:
-        out = (e.stdout or "") + "\n" + (e.stderr or "")
-        return 124, f"XFOIL TIMEOUT after {xfoil.timeout_sec}s\n{out}"
+        cmd = f"""
+LOAD {airfoil_dat}
+PANE
+OPER
+VISC {re}
+MACH {mach}
+ITER 200
+PACC
+{polar_path}
+
+ALFA {alpha}
+PACC
+QUIT
+"""
+
+        try:
+            process = subprocess.Popen(
+                ["xfoil"],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            out, err = process.communicate(cmd, timeout=timeout)
+            print("--- XFOIL STDOUT ---")
+            print(out)
+            print("--- XFOIL STDERR ---")
+            print(err)
+        except Exception as e:
+            print("XFOIL execution error:", e)
+            return None
+
+        # Polar dosyası oluşmadıysa -> başarısız
+        if not os.path.exists(polar_path):
+            return None
+
+        # Polar parse
+        try:
+            with open(polar_path, "r") as f:
+                lines = f.readlines()
+
+            for line in lines:
+                parts = line.split()
+                if len(parts) >= 5:
+                    try:
+                        cl = float(parts[1])
+                        cd = float(parts[2])
+                        return cl, cd
+                    except:
+                        continue
+
+        except:
+            return None
+
+    return None
