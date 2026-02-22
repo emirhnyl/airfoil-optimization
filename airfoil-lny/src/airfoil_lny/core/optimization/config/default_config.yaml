@@ -1,0 +1,24 @@
+airfoil:
+  type: "naca"
+  code: "2412"
+
+analysis:
+  reynolds: 500000
+  mach: 0.05
+  alpha_start: -2
+  alpha_end: 12
+  alpha_step: 0.5
+
+optimization:
+  population_size: 20
+  generations: 10
+  mutation_rate: 0.2
+  crossover_rate: 0.7
+
+objectives:
+  maximize:
+    - "cl_cd"
+
+constraints:
+  min_thickness: 0.08
+  max_camber: 0.1

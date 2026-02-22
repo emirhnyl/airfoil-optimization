@@ -63,7 +63,7 @@ QUIT
                     try:
                         cl = float(parts[1])
                         cd = float(parts[2])
-                        return cl, cd
+                        return {"cl": cl, "cd": cd}
                     except:
                         continue
 
